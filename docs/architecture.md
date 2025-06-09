@@ -79,53 +79,49 @@
 
 ## Detailed System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                              Host Machine                               │
-│                                                                         │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐     │
-│  │   Open WebUI    │    │    Ollama API   │    │  Docker Engine  │     │
-│  │   Container     │    │    Container    │    │                 │     │
-│  │                 │    │                 │    │                 │     │
-│  │  ┌───────────┐  │    │  ┌───────────┐  │    │  ┌───────────┐  │     │
-│  │  │  Frontend │  │    │  │  API      │  │    │  │ Volumes   │  │     │
-│  │  │  (React)  │  │    │  │  Server   │  │    │  │           │  │     │
-│  │  └───────────┘  │    │  └───────────┘  │    │  │  ┌─────┐  │  │     │
-│  │        │        │    │        │        │    │  │  │ollama│  │  │     │
-│  │  ┌───────────┐  │    │  ┌───────────┐  │    │  │  │data │  │  │     │
-│  │  │  Backend  │  │    │  │  Model    │  │    │  │  └─────┘  │  │     │
-│  │  │  (FastAPI)│  │    │  │  Manager  │  │    │  │           │  │     │
-│  │  └───────────┘  │    │  └───────────┘  │    │  │  ┌─────┐  │  │     │
-│  └────────┬────────┘    └────────┬────────┘    │  │  │webui│  │  │     │
-│           │                      │             │  │  │data │  │  │     │
-│           │                      │             │  │  └─────┘  │  │     │
-│           │                      │             │  └───────────┘  │     │
-│           │                      │             └─────────────────┘     │
-│           │                      │                                      │
-│           └──────────────────────┘                                      │
-│                                                                         │
-│  ┌─────────────────────────────────────────────────────────────────┐    │
-│  │                    Host Machine Resources                       │    │
-│  │                                                                 │    │
-│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐         │    │
-│  │  │    CPU      │    │    GPU      │    │   Memory    │         │    │
-│  │  │             │    │  (if avail) │    │             │         │    │
-│  │  └─────────────┘    └─────────────┘    └─────────────┘         │    │
-│  │                                                                 │    │
-│  └─────────────────────────────────────────────────────────────────┘    │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph "Host Machine"
+        subgraph "Open WebUI Container"
+            OWFE[Frontend (React)]
+            OWBE[Backend (FastAPI)]
+            OWFE -- "Sends requests" --> OWBE
+        end
 
-Data Flow:
-1. User Request → Open WebUI Frontend
-2. Frontend → Backend API
-3. Backend → Ollama API
-4. Ollama API → Model Manager
-5. Model Manager → LLM Model (runs on host machine, can use GPU)
-6. Response flows back through the same path
+        subgraph "Ollama API Container"
+            OAPI[API Server]
+            OMAN[Model Manager]
+            OAPI -- "Manages" --> OMAN
+        end
 
-Note: The LLM model runs directly on the host machine, not in a container,
-allowing it to access and utilize the host's GPU for acceleration.
+        subgraph "Docker Engine"
+            VOL[Volumes]
+            OLLDATA[ollama data]
+            WEBUI_DATA[webui data]
+            VOL --> OLLDATA
+            VOL --> WEBUI_DATA
+        end
+
+        subgraph "Host Machine Resources"
+            H_CPU[CPU]
+            H_GPU[GPU <br/> (if avail)]
+            H_MEM[Memory]
+        end
+
+        %% Connections within Host Machine
+        OWBE -- "Communicates via <br/> internal network" --> OAPI
+        OWBE -- "Persists chat history" --> WEBUI_DATA
+        OMAN -- "Persists models" --> OLLDATA
+
+        %% Explicit connections from Model Manager to Host Resources for clarity
+        OMAN -- "Uses" --> H_CPU
+        OMAN -- "Uses" --> H_GPU
+        OMAN -- "Uses" --> H_MEM
+    end
+
+    %% External connections
+    USER[User] -- "Interacts with" --> OWFE
+    OMAN -- "Loads and runs" --> LLM[LLM Model]
 ```
 
 ## Docker Isolation and Security
