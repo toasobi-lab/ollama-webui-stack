@@ -1,5 +1,7 @@
 # Local AI Chat
 
+> **Note:** Running large language models (LLMs) locally, especially on laptops, can use significant CPU and memory resources, which may cause your device to get warm or run slower. Monitor your system temperature and resource usage, and consider stopping the service if your device becomes uncomfortable. For most users, running smaller models or using a dedicated server/cloud is recommended for heavy workloads.
+
 A local AI chat application that runs entirely on your machine using Docker Compose. This project uses [Open WebUI](https://github.com/open-webui/open-webui), a beautiful and feature-rich interface for Ollama, combined with local AI model deployment.
 
 ## 🚀 Features
@@ -35,8 +37,8 @@ The project consists of three main components:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/local-ai-chat.git
-   cd local-ai-chat
+   git clone https://github.com/toasobi-lab/ollama-webui-stack.git
+   cd ollama-webui-stack
    ```
 
 2. Start the services:
@@ -137,4 +139,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - [Open WebUI](https://github.com/open-webui/open-webui) for the beautiful web interface
-- [Ollama](https://github.com/ollama/ollama) for the AI model hosting 
+- [Ollama](https://github.com/ollama/ollama) for the AI model hosting
+
+## 🤖 Model Selection Advice
+
+- **Start Small:** Try 1B–7B parameter models first (e.g., `deepseek-coder:1.3b`, `mistral:7b`). They are much faster and use less memory/CPU.
+- **Go Bigger if Needed:** Use 13B+ models only if you need more capability and your system can handle it.
+- **Language/Task Fit:** Use code-specialized models for coding, general models for chat, and language-specific models for translation or summarization.
+- **Monitor Performance:** If your Mac gets hot or slow, switch to a smaller model or reduce the number of concurrent requests.
+- **Community Feedback:** Check the [Ollama model list](https://ollama.com/library) and community forums for recommendations on efficient models for your hardware.
+
+## ⚙️ Resource Limit Advice
+
+- **Set Limits:** Always set reasonable CPU and memory limits for both Open WebUI and Ollama API in your `docker-compose.yml`.
+- **No One-Size-Fits-All:** The right values depend on your hardware and how much you want to dedicate to AI workloads.
+- **Why Limit?** Limiting resources helps prevent overheating, system slowdowns, and ensures other applications remain usable.
+- **Start Small:** Begin with conservative limits and increase only if your system remains cool and responsive.
+- **Monitor:** Regularly check your system temperature and performance, and adjust limits as needed.
+- **Heavy Workloads:** For large models or long-running jobs, consider using a dedicated server or cloud environment. 

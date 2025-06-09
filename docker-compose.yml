@@ -7,12 +7,21 @@ services:
       - "3000:8080"
     environment:
       - OLLAMA_API_BASE_URL=http://ollama:11434/api
-      - WEBUI_SECRET_KEY=your-secret-key-here  # Change this in production
+      - WEBUI_SECRET_KEY=your-secret-key-here  # IMPORTANT: Change this to a strong, unique key in production
     volumes:
       - open_webui_data:/app/backend/data  # Persist chat history and settings
     depends_on:
       - ollama
     restart: unless-stopped
+    # Optional: Resource limits for Open WebUI container
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: 'YOUR_CPU_LIMIT'    # Set a reasonable CPU limit (e.g., '2.0')
+    #       memory: YOUR_MEMORY_LIMIT # Set a reasonable memory limit (e.g., '4G')
+    #     reservations:
+    #       cpus: 'YOUR_CPU_RESERVATION'    # Set a minimum guaranteed CPU (e.g., '0.5')
+    #       memory: YOUR_MEMORY_RESERVATION # Set a minimum guaranteed memory (e.g., '1G')
 
   ollama:
     image: ollama/ollama:latest
@@ -22,6 +31,20 @@ services:
       - ollama_data:/root/.ollama
     command: serve
     restart: unless-stopped
+    # Optional: Resource limits for Ollama container
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: 'YOUR_CPU_LIMIT'    # Set a reasonable CPU limit (e.g., '4.0')
+    #       memory: YOUR_MEMORY_LIMIT # Set a reasonable memory limit (e.g., '8G')
+    #       # Uncomment and adjust the following if you want to limit GPU usage
+    #       # devices:
+    #       #   - driver: nvidia
+    #       #     count: 1
+    #       #     capabilities: [gpu]
+    #     reservations:
+    #       cpus: 'YOUR_CPU_RESERVATION'    # Set a minimum guaranteed CPU (e.g., '1.0')
+    #       memory: YOUR_MEMORY_RESERVATION # Set a minimum guaranteed memory (e.g., '2G')
 
 volumes:
   ollama_data:

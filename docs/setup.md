@@ -1,5 +1,7 @@
 # Setup Guide
 
+> **Note:** Running large language models (LLMs) locally, especially on laptops, can use significant CPU and memory resources, which may cause your device to get warm or run slower. Monitor your system temperature and resource usage, and consider stopping the service if your device becomes uncomfortable. For most users, running smaller models or using a dedicated server/cloud is recommended for heavy workloads.
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -11,8 +13,8 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/local-ai-chat.git
-   cd local-ai-chat
+   git clone https://github.com/toasobi-lab/ollama-webui-stack.git
+   cd ollama-webui-stack
    ```
 
 2. **Configure Environment**
